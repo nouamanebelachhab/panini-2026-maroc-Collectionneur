@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panini Coupe du Monde 2026 - Collectionneur Maroc</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1e3c72; margin-bottom: 10px; }
+        .login-section {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .btn-danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .btn-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .btn-warning { background: linear-gradient(135deg, #ff9800 0%, #f44336 100%); }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            background: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .stat-number { font-size: 32px; font-weight: bold; }
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .team-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .team-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .team-card.complete {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border-color: #28a745;
+        }
+        .team-name { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .team-progress {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .team-progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        .cards-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 15px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .card-item {
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card-item:hover { transform: scale(1.05); }
+        .card-owned { background: #c8e6c9; border: 2px solid #4CAF50; }
+        .card-duplicate { background: #ffe0b2; border: 2px solid #ff9800; }
+        .card-missing { background: #ffcdd2; border: 2px solid #f44336; }
+        .user-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+        }
+        .contact-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .add-card {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .badge-complete { background: #4CAF50; color: white; }
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            width: 350px;
+        }
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+            cursor: pointer;
+        }
+        .notification.success { border-left: 4px solid #4CAF50; }
+        .notification.warning { border-left: 4px solid #ff9800; }
+        .notification.info { border-left: 4px solid #2196F3; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .teams-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <h1>🏆 Collection Panini Coupe du Monde 2026 - Maroc</h1>
+                <div id="userInfo"></div>
+            </div>
+        </div>
+        <div id="app">
+            <div class="login-section">
+                <h2>Bienvenue collectionneur marocain !</h2>
+                <p>Rejoins la communauté des passionnés</p>
+                <button onclick="showRegistration()">🔑 S'inscrire / Se connecter</button>
+            </div>
+        </div>
+    </div>
+    <div id="notificationContainer" class="notification-container"></div>
+    <div id="cardsModal" class="cards-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modalTeamName"></h2>
+            <div id="modalCards"></div>
+        </div>
+    </div>
+
+    <script>
+        const moroccanCities = ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", "Kenitra", "Tétouan", "Safi", "El Jadida", "Nador", "Settat", "Khémisset", "Berrechid", "Taza", "Larache", "Guelmim", "Beni Mellal", "Tiznit", "Al Hoceima", "Dakhla", "Laâyoune", "Errachidia", "Khouribga", "Chefchaouen", "Ouazzane", "Berkane", "Zagora"].sort();
+        
+        const teams = [
+            { name: "PANINI", cards: 1 }, { name: "FWC", cards: 19 }, { name: "MEXICO", cards: 20 },
+            { name: "SOUTH AFRICA", cards: 20 }, { name: "KOREA REPUBLIC", cards: 20 }, { name: "CZECHIA", cards: 20 },
+            { name: "CANADA", cards: 20 }, { name: "BOSNIA-HERZEGOVINA", cards: 20 }, { name: "QATAR", cards: 20 },
+            { name: "SWITZERLAND", cards: 20 }, { name: "BRAZIL", cards: 20 }, { name: "MOROCCO", cards: 20 },
+            { name: "HAITI", cards: 20 }, { name: "SCOTLAND", cards: 20 }, { name: "USA", cards: 20 },
+            { name: "PARAGUAY", cards: 20 }, { name: "AUSTRALIA", cards: 20 }, { name: "TURKEY", cards: 20 },
+            { name: "GERMANY", cards: 20 }, { name: "CURAÇAO", cards: 20 }, { name: "CÔTE D'IVOIRE", cards: 20 },
+            { name: "ECUADOR", cards: 20 }, { name: "NETHERLANDS", cards: 20 }, { name: "JAPAN", cards: 20 },
+            { name: "SWEDEN", cards: 20 }, { name: "TUNISIA", cards: 20 }, { name: "BELGIUM", cards: 20 },
+            { name: "EGYPT", cards: 20 }, { name: "IRAN", cards: 20 }, { name: "NEW ZEALAND", cards: 20 },
+            { name: "SPAIN", cards: 20 }, { name: "CABO VERDE", cards: 20 }, { name: "SAUDI ARABIA", cards: 20 },
+            { name: "URUGUAY", cards: 20 }, { name: "FRANCE", cards: 20 }, { name: "SENEGAL", cards: 20 },
+            { name: "IRAQ", cards: 20 }, { name: "NORWAY", cards: 20 }, { name: "ARGENTINA", cards: 20 },
+            { name: "ALGERIA", cards: 20 }, { name: "AUSTRIA", cards: 20 }, { name: "JORDAN", cards: 20 },
+            { name: "PORTUGAL", cards: 20 }, { name: "CONGO DR", cards: 20 }, { name: "UZBEKISTAN", cards: 20 },
+            { name: "COLOMBIA", cards: 20 }, { name: "ENGLAND", cards: 20 }, { name: "CROATIA", cards: 20 },
+            { name: "GHANA", cards: 20 }, { name: "PANAMA", cards: 20 }
+        ];
+        
+        const totalCards = teams.reduce((sum, team) => sum + team.cards, 0);
+        let currentUser = null, myCollection = {}, myDuplicates = [], allUsers = [], editMode = false;
+
+        function showNotification(msg, type, sec) {
+            const container = document.getElementById('notificationContainer');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `<div>${msg}</div>`;
+            notif.onclick = () => notif.remove();
+            container.appendChild(notif);
+            setTimeout(() => notif.remove(), sec * 1000);
+        }
+
+        function showRegistration() {
+            const citiesOptions = moroccanCities.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('app').innerHTML = `
+                <div class="card">
+                    <h2>📝 Inscription Collectionneur Maroc</h2>
+                    <form onsubmit="registerUser(event)">
+                        <div class="form-group"><label>Nom complet :</label><input type="text" id="userName" required style="width:100%"></div>
+                        <div class="form-group"><label>Email :</label><input type="email" id="userEmail" required style="width:100%"></div>
+                        <div class="form-group"><label>Téléphone :</label><input type="tel" id="userPhone" required style="width:100%"></div>
+                        <div class="form-group"><label>Ville :</label><select id="userCity" required style="width:100%"><option value="">Sélectionnez</option>${citiesOptions}</select></div>
+                        <button type="submit">✅ S'inscrire</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function registerUser(e) {
+            e.preventDefault();
+            currentUser = {
+                email: document.getElementById('userEmail').value,
+                name: document.getElementById('userName').value,
+                phone: document.getElementById('userPhone').value,
+                city: document.getElementById('userCity').value
+            };
+            updateUserDisplay();
+            loadLocalData();
+            showNotification(`Bienvenue ${currentUser.name} !`, 'success', 3);
+        }
+
+        function updateUserDisplay() {
+            document.getElementById('userInfo').innerHTML = `
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                    👤 ${currentUser.name} | 📍 ${currentUser.city} | 📱 ${currentUser.phone}
+                    <button onclick="showEditProfile()" class="btn-warning" style="padding:5px 10px">✏️ Modifier</button>
+                    <button onclick="logout()" class="btn-danger" style="padding:5px 10px">Déconnexion</button>
+                </div>
+            `;
+        }
+
+        function showEditProfile() {
+            const citiesOptions = moroccanCities.map(c => `<option value="${c}" ${currentUser.city === c ? 'selected' : ''}>${c}</option>`).join('');
+            document.getElementById('app').innerHTML = `
+                <div class="card">
+                    <h2>✏️ Modifier profil</h2>
+                    <form onsubmit="updateProfile(event)">
+                        <div class="form-group"><label>Nom :</label><input type="text" id="editName" value="${currentUser.name}" style="width:100%"></div>
+                        <div class="form-group"><label>Téléphone :</label><input type="tel" id="editPhone" value="${currentUser.phone}" style="width:100%"></div>
+                        <div class="form-group"><label>Ville :</label><select id="editCity" style="width:100%">${citiesOptions}</select></div>
+                        <button type="submit">💾 Sauvegarder</button>
+                        <button type="button" onclick="loadLocalData()">Annuler</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function updateProfile(e) {
+            e.preventDefault();
+            currentUser.name = document.getElementById('editName').value;
+            currentUser.phone = document.getElementById('editPhone').value;
+            currentUser.city = document.getElementById('editCity').value;
+            const key = `panini_${currentUser.email}`;
+            const data = JSON.parse(localStorage.getItem(key) || '{}');
+            data.name = currentUser.name; data.phone = currentUser.phone; data.city = currentUser.city;
+            localStorage.setItem(key, JSON.stringify(data));
+            updateUserDisplay();
+            loadLocalData();
+            showNotification('Profil mis à jour', 'success', 2);
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('userInfo').innerHTML = '';
+            document.getElementById('app').innerHTML = `<div class="login-section"><h2>Bienvenue !</h2><button onclick="showRegistration()">🔑 S'inscrire</button></div>`;
+        }
+
+        function loadLocalData() {
+            if (!currentUser) return;
+            const data = localStorage.getItem(`panini_${currentUser.email}`);
+            if (data) { const p = JSON.parse(data); myCollection = p.collection || {}; myDuplicates = p.duplicates || []; }
+            else { myCollection = {}; myDuplicates = []; }
+            allUsers = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.startsWith('panini_') && k !== `panini_${currentUser.email}`) {
+                    const d = JSON.parse(localStorage.getItem(k));
+                    const email = k.replace('panini_', '');
+                    allUsers.push({ email, name: d.name, phone: d.phone, city: d.city, collection: d.collection || {}, duplicates: d.duplicates || [] });
+                }
+            }
+            updateUI();
+        }
+
+        function saveLocalData() {
+            localStorage.setItem(`panini_${currentUser.email}`, JSON.stringify({ name: currentUser.name, phone: currentUser.phone, city: currentUser.city, collection: myCollection, duplicates: myDuplicates }));
+            loadLocalData();
+        }
+
+        function getCardId(team, num) { return `${team}_${num}`; }
+        function getTeamProgress(team) { let owned = 0, dup = 0; for (let i=1; i<=team.cards; i++) { if (myCollection[getCardId(team.name, i)]) { owned++; if (myDuplicates.includes(getCardId(team.name, i))) dup++; } } return { owned, dup, total: team.cards, percent: (owned/team.cards)*100 }; }
+        function getGlobalStats() { let owned = 0; teams.forEach(t => { for (let i=1; i<=t.cards; i++) if (myCollection[getCardId(t.name, i)]) owned++; }); return { owned, dup: myDuplicates.length, total: totalCards, percent: (owned/totalCards)*100 }; }
+
+        function addCard(team, num) {
+            const id = getCardId(team, num);
+            if (myCollection[id]) { if (!myDuplicates.includes(id)) { myDuplicates.push(id); showNotification(`Double #${num} ${team}`, 'warning', 2); } }
+            else { myCollection[id] = true; showNotification(`Nouvelle carte #${num} ${team}`, 'success', 2); }
+            saveLocalData(); showTeamCards(team);
+        }
+
+        function removeCard(team, num) {
+            if (confirm(`Supprimer ${team} #${num} ?`)) {
+                const id = getCardId(team, num);
+                delete myCollection[id];
+                const idx = myDuplicates.indexOf(id);
+                if (idx !== -1) myDuplicates.splice(idx, 1);
+                saveLocalData(); showNotification(`Carte supprimée`, 'info', 2); showTeamCards(team);
+            }
+        }
+
+        function removeDuplicate(cardId, team, num) {
+            const idx = myDuplicates.indexOf(cardId);
+            if (idx !== -1) { myDuplicates.splice(idx, 1); saveLocalData(); showNotification(`Doublon retiré`, 'info', 2); showTeamCards(team); }
+        }
+
+        function updateUI() {
+            const stats = getGlobalStats();
+            document.getElementById('app').innerHTML = `
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('teams')">🏆 Équipes</button>
+                    <button class="tab" onclick="showTab('duplicates')">🔄 Doublons (${stats.dup})</button>
+                    <button class="tab" onclick="showTab('users')">👥 Collectionneurs (${allUsers.length})</button>
+                </div>
+                <div class="stats">
+                    <div class="stat-box"><div class="stat-number">${stats.owned}</div><div>Cartes</div><div>${Math.round(stats.percent)}%</div></div>
+                    <div class="stat-box"><div class="stat-number">${stats.dup}</div><div>Doublons</div></div>
+                    <div class="stat-box"><div class="stat-number">${stats.total - stats.owned}</div><div>Manquantes</div></div>
+                </div>
+                <div id="tabContent"></div>
+            `;
+            showTab('teams');
+        }
+
+        function showTab(tab) {
+            const content = document.getElementById('tabContent');
+            if (tab === 'teams') {
+                let html = '<div class="teams-grid">';
+                teams.forEach(t => { const p = getTeamProgress(t); html += `<div class="team-card ${p.owned === p.total ? 'complete' : ''}" onclick="showTeamCards('${t.name}')"><div class="team-name">${t.name}${p.owned === p.total ? ' ✓' : ''}</div><div class="team-progress"><div class="team-progress-bar" style="width:${p.percent}%"></div></div><div>${p.owned}/${p.total}</div><div class="progress-text">Doublons: ${p.dup}</div></div>`; });
+                html += '</div>';
+                content.innerHTML = html;
+            } else if (tab === 'duplicates') {
+                if (myDuplicates.length === 0) content.innerHTML = '<div class="card"><p>Aucun doublon</p></div>';
+                else { let html = '<div class="teams-grid">'; myDuplicates.forEach(d => { const [team, num] = d.split('_'); html += `<div class="team-card"><div class="team-name">${team}</div><div>Carte #${num}</div><button onclick="removeDuplicate('${d}', '${team}', ${num})" class="btn-danger">Retirer</button></div>`; }); html += '</div>'; content.innerHTML = html; }
+            } else if (tab === 'users') {
+                if (allUsers.length === 0) content.innerHTML = '<div class="card"><p>Aucun autre collectionneur</p></div>';
+                else { let html = '<div class="teams-grid">'; allUsers.forEach(u => { const owned = Object.keys(u.collection || {}).length; html += `<div class="team-card"><div class="team-name">${u.name}</div><div>📍 ${u.city}</div><div>📦 ${owned} cartes</div><div class="contact-info">📱 ${u.phone}</div><button onclick="contactForTrade('${u.email}', '${u.phone}')" class="btn-success">📞 Contacter</button></div>`; }); html += '</div>'; content.innerHTML = html; }
+            }
+        }
+
+        function showTeamCards(teamName) {
+            const team = teams.find(t => t.name === teamName);
+            const progress = getTeamProgress(team);
+            let html = `<div class="add-card"><input type="number" id="newCardNum" placeholder="Numéro (1-${team.cards})"><button onclick="addCardWithInput('${teamName}')">➕ Ajouter</button><button onclick="toggleEditMode('${teamName}')" class="btn-warning">✏️ Édition</button></div><div class="cards-grid">`;
+            for (let i = 1; i <= team.cards; i++) {
+                const id = getCardId(teamName, i);
+                let status = '', cls = '';
+                if (myCollection[id]) { if (myDuplicates.includes(id)) { status = '🔄'; cls = 'card-duplicate'; } else { status = '✅'; cls = 'card-owned'; } }
+                else { status = '❌'; cls = 'card-missing'; }
+                const action = editMode ? `onclick="removeCard('${teamName}', ${i})"` : `onclick="addCard('${teamName}', ${i})"`;
+                html += `<div class="card-item ${cls}" ${action}>#${i}<br><small>${status}</small>${editMode ? '<div style="font-size:9px;color:red">▼ supprimer</div>' : ''}</div>`;
+            }
+            html += '</div>';
+            if (editMode) html += `<div style="margin-top:15px"><button onclick="disableEditMode()" class="btn-success">✓ Quitter édition</button></div>`;
+            document.getElementById('modalTeamName').innerHTML = `${teamName} - ${progress.owned}/${progress.total}`;
+            document.getElementById('modalCards').innerHTML = html;
+            document.getElementById('cardsModal').style.display = 'block';
+        }
+
+        function toggleEditMode(team) { editMode = true; showTeamCards(team); }
+        function disableEditMode() { editMode = false; closeModal(); }
+        function addCardWithInput(team) { const num = parseInt(document.getElementById('newCardNum').value); if (num > 0 && num <= teams.find(t=>t.name===team).cards) addCard(team, num); else showNotification('Numéro invalide', 'error', 2); }
+        function contactForTrade(email, phone) { navigator.clipboard.writeText(`Email: ${email}\nTél: ${phone}`); showNotification('Coordonnées copiées', 'success', 2); if(confirm('Ouvrir WhatsApp ?')) window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=Bonjour%20collectionneur%20Panini%20!`, '_blank'); }
+        function closeModal() { document.getElementById('cardsModal').style.display = 'none'; editMode = false; }
+
+        window.showRegistration = showRegistration; window.registerUser = registerUser; window.logout = logout; window.showTab = showTab;
+        window.showTeamCards = showTeamCards; window.addCard = addCard; window.removeCard = removeCard; window.removeDuplicate = removeDuplicate;
+        window.contactForTrade = contactForTrade; window.closeModal = closeModal; window.showEditProfile = showEditProfile;
+        window.updateProfile = updateProfile; window.toggleEditMode = toggleEditMode; window.disableEditMode = disableEditMode;
+        window.addCardWithInput = addCardWithInput;
+    </script>
+</body>
+</html>
